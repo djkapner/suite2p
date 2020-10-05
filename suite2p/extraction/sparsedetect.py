@@ -207,7 +207,7 @@ def add_square(yi,xi,lx,Ly,Lx):
     mask = mask / (mask**2).sum()**.5
     return y0.flatten(), x0.flatten(), mask.flatten()
 
-def iter_extend(ypix, xpix, rez, Lyc,Lxc):
+def iter_extend(ypix, xpix, rez, Lyc,Lxc, activity_threshold_factor=0.2):
     """ extend mask based on activity of pixels on active frames
 
     ACTIVE frames determined by threshold
@@ -223,6 +223,10 @@ def iter_extend(ypix, xpix, rez, Lyc,Lxc):
     
     rez : 2D array
         binned movie on active frames [nactive x Lyc*Lxc]
+
+    activity_threshold_factor: float
+        pixels with weights above this factor * the max weight will be
+        considered active
 
     Returns
     ----------------
@@ -246,7 +250,7 @@ def iter_extend(ypix, xpix, rez, Lyc,Lxc):
         # activity in proposed ROI on ACTIVE frames
         usub = rez[:, ypix*Lxc+ xpix]
         lam = np.mean(usub,axis=0)
-        ix = lam>max(0, lam.max()/5.0)
+        ix = lam>max(0, lam.max() * activity_threshold_factor)
         if ix.sum()==0:
             print('break')
             break;
@@ -368,7 +372,7 @@ def sparsery(ops):
     ----------------
 
     ops : dictionary
-        'reg_file', 'Ly', 'Lx', 'yrange', 'xrange', 'tau', 'fs', 'nframes', 'high_pass', 'batch_size'
+        'reg_file', 'Ly', 'Lx', 'yrange', 'xrange', 'tau', 'fs', 'nframes', 'high_pass', 'batch_size', 'activity_threshold_factor'
 
 
     Returns
@@ -493,7 +497,9 @@ def sparsery(ops):
         
         # extend mask based on activity similarity
         for j in range(3):
-            ypix0, xpix0, lam0 = iter_extend(ypix0, xpix0, rez[goodframe], Lyc, Lxc)
+            ypix0, xpix0, lam0 = iter_extend(
+                    ypix0, xpix0, rez[goodframe], Lyc, Lxc,
+                    activity_threshold_factor=ops['activity_threshold_factor'])
             tproj = rez[:, ypix0*Lxc+ xpix0] @ lam0
             goodframe = np.nonzero(tproj>Th2)[0]
             if len(goodframe)<1:

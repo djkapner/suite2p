@@ -88,6 +88,7 @@ def default_ops():
         'threshold_scaling': 1.0, # adjust the automatically determined threshold by this scalar multiplier
         'max_overlap': 0.75, # cells with more overlap than this get removed during triage, before refinement
         'high_pass': 100, # running mean subtraction with window of size 'high_pass' (use low values for 1P)
+        'activity_threshold_factor': 0.2 # pixels above this factor * max weight will be considered active
         # ROI extraction parameters
         'inner_neuropil_radius': 2, # number of pixels to keep between ROI and neuropil donut
         'min_neuropil_pixels': 350, # minimum number of pixels in the neuropil
