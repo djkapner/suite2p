@@ -100,7 +100,7 @@ def add_square(yi,xi,lx,Ly,Lx):
     return y0.flatten(), x0.flatten(), mask.flatten()
 
 
-def iter_extend(ypix, xpix, mov, Lyc, Lxc, active_frames
+def iter_extend(ypix, xpix, mov, Lyc, Lxc, active_frames,
                 fraction_maxlam_threshold=0.2):
     """ extend mask based on activity of pixels on active frames
     ACTIVE frames determined by threshold
