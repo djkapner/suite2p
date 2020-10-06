@@ -106,6 +106,7 @@ def default_ops():
         'high_pass': 100,  # running mean subtraction with window of size 'high_pass' (use low values for 1P)
         'use_builtin_classifier': False,  # whether or not to use built-in classifier for cell detection (overrides
                                          # classifier specified in classifier_path if set to True)
+        'fraction_maxlam_threshold': 0.2,  # in sparse mode, pixels with activity >= max(lam) * <this value> will be considered active.
 
         # ROI extraction parameters
         'inner_neuropil_radius': 2,  # number of pixels to keep between ROI and neuropil donut

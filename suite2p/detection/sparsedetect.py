@@ -1,4 +1,4 @@
-from typing import Tuple, Dict, List, Any
+from typing import Tuple, Dict, List, Any, Optional
 from copy import deepcopy
 from enum import Enum
 
@@ -100,7 +100,8 @@ def add_square(yi,xi,lx,Ly,Lx):
     return y0.flatten(), x0.flatten(), mask.flatten()
 
 
-def iter_extend(ypix, xpix, mov, Lyc, Lxc, active_frames):
+def iter_extend(ypix, xpix, mov, Lyc, Lxc, active_frames
+                fraction_maxlam_threshold=0.2):
     """ extend mask based on activity of pixels on active frames
     ACTIVE frames determined by threshold
     
@@ -138,7 +139,7 @@ def iter_extend(ypix, xpix, mov, Lyc, Lxc, active_frames):
         # activity in proposed ROI on ACTIVE frames
         usub = mov[np.ix_(active_frames, ypix*Lxc+ xpix)]
         lam = np.mean(usub,axis=0)
-        ix = lam>max(0, lam.max()/5.0)
+        ix = lam >= max(0, lam.max() * fraction_maxlam_threshold)
         if ix.sum()==0:
             print('break')
             break;
@@ -279,7 +280,8 @@ def find_best_scale(I: np.ndarray, spatial_scale: int) -> Tuple[int, EstimateMod
 
 
 def sparsery(mov: np.ndarray, high_pass: int, neuropil_high_pass: int, batch_size: int, spatial_scale: int, threshold_scaling,
-             max_iterations: int, yrange, xrange) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
+             max_iterations: int, yrange, xrange,
+             fraction_maxlam_threshold: Optional[float] = 0.2) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
     """Returns stats and ops from 'mov' using correlations in time."""
 
     mov = temporal_high_pass_filter(mov=mov, width=int(high_pass))
@@ -358,7 +360,9 @@ def sparsery(mov: np.ndarray, high_pass: int, neuropil_high_pass: int, batch_siz
         
         # extend mask based on activity similarity
         for j in range(3):
-            ypix0, xpix0, lam0 = iter_extend(ypix0, xpix0, mov, Lyc, Lxc, active_frames)
+            ypix0, xpix0, lam0 = iter_extend(
+                    ypix0, xpix0, mov, Lyc, Lxc, active_frames,
+                    fraction_maxlam_threshold=fraction_maxlam_threshold)
             tproj = mov[:, ypix0*Lxc+ xpix0] @ lam0
             active_frames = np.nonzero(tproj>Th2)[0]
             if len(active_frames)<1:
