@@ -281,7 +281,8 @@ def find_best_scale(I: np.ndarray, spatial_scale: int) -> Tuple[int, EstimateMod
 
 def sparsery(mov: np.ndarray, high_pass: int, neuropil_high_pass: int, batch_size: int, spatial_scale: int, threshold_scaling,
              max_iterations: int, yrange, xrange,
-             fraction_maxlam_threshold: Optional[float] = 0.2) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
+             fraction_maxlam_threshold: Optional[float] = 0.2,
+             legacy_spatial: Optional[bool] = False) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
     """Returns stats and ops from 'mov' using correlations in time."""
 
     mov = temporal_high_pass_filter(mov=mov, width=int(high_pass))
@@ -313,6 +314,9 @@ def sparsery(mov: np.ndarray, high_pass: int, neuropil_high_pass: int, batch_siz
                                      kx=min(3, gxy0.shape[1] - 1), ky=min(3, gxy0.shape[2] - 1))
         I0[:] = gmodel(gxy[0][1, :, 0], gxy[0][0, 0, :])
     v_corr = I.max(axis=0)
+
+    if legacy_spatial:
+        I[0] = 0.0
 
     # to set threshold, find best scale based on scale of top peaks
     im, estimate_mode = find_best_scale(I=I, spatial_scale=spatial_scale)

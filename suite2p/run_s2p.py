@@ -107,7 +107,7 @@ def default_ops():
         'use_builtin_classifier': False,  # whether or not to use built-in classifier for cell detection (overrides
                                          # classifier specified in classifier_path if set to True)
         'fraction_maxlam_threshold': 0.2,  # in sparse mode, pixels with activity >= max(lam) * <this value> will be considered active.
-
+        'legacy_spatial': False,  # in sparse mode, older versions did not consider highest resolution layer of image pyramid in estimating spatial scale. Set to True for legacy behavior
         # ROI extraction parameters
         'inner_neuropil_radius': 2,  # number of pixels to keep between ROI and neuropil donut
         'min_neuropil_pixels': 350,  # minimum number of pixels in the neuropil

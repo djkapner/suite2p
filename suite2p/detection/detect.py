@@ -78,7 +78,8 @@ def select_rois(mov: np.ndarray, dy: int, dx: int, Ly: int, Lx: int, max_overlap
             max_iterations=250 * ops['max_iterations'],
             yrange=ops['yrange'],
             xrange=ops['xrange'],
-            fraction_maxlam_threshold=ops['fraction_maxlam_threshold']
+            fraction_maxlam_threshold=ops['fraction_maxlam_threshold'],
+            legacy_spatial=ops['legacy_spatial']
         )
         ops.update(new_ops)
     else:
